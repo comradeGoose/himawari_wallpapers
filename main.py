@@ -7,7 +7,7 @@ from PIL import Image
 BASE_URL = "https://himawari8-dl.nict.go.jp/himawari8/img/D531106"  # Базовый URL для Himawari-8
 GRANULARITY = 4  # Детализация: 1d, 2d, 4d, 8d, 16d (чем выше степень, тем больше сегментов)
 RESOLUTION = 550  # Размер сегмента: 550 px
-TIMESTAMP = "2024/12/29/040000"  # Время в формате ГГГГ/ММ/ДД/ЧЧММСС
+TIMESTAMP = "2024/12/29/044000"  # Время в формате ГГГГ/ММ/ДД/ЧЧММСС
 
 # Папка для загрузки сегментов
 OUTPUT_DIR = "himawari_segments"
