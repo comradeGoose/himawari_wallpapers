@@ -1,11 +1,10 @@
-import os
+import os, shutil
 import ctypes
 import requests
 import socket
 import struct
 from datetime import datetime, timezone, timedelta
 from PIL import Image
-
 
 BASE_URL = "https://himawari8-dl.nict.go.jp/himawari8/img/D531106"  # Базовый URL для Himawari-8
 GRANULARITY = 4  # Детализация: 1d, 2d, 4d, 8d, 16d (чем выше степень, тем больше сегментов n*n 16*16 = 60.5 Mb)
@@ -101,12 +100,26 @@ def combine_segments(segment_paths, grid_size):
     :param grid_size: 
     :return: 
     """
-
+    
+    print("Объединяем изображение...")
     full_image = Image.new("RGB", (RESOLUTION * grid_size, RESOLUTION * grid_size))
     for path, x, y in segment_paths:
         segment = Image.open(path)
         full_image.paste(segment, (x * RESOLUTION, y * RESOLUTION))
     return full_image
+
+def delete_segments():
+    """"""
+    print("Удаляем сегменты...")
+    for filename in os.listdir(OUTPUT_DIR):
+        file_path = os.path.join(OUTPUT_DIR, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print('Failed to delete %s. Reason: %s' % (file_path, e))
 
 def set_wallpaper():
     """Устанавливает фоновое изображение рабочего стола."""
@@ -122,10 +135,10 @@ if __name__ == "__main__":
     print("Скачиваем сегменты...")
     segments = download_all_segments(GRANULARITY)
     if segments:
-        print("Объединяем изображение...")
         full_image = combine_segments(segments, GRANULARITY)
         full_image.save(f"image/himawari_full_image.png")
         print("Полное изображение сохранено как himawari_full_image.png")
+        delete_segments()
         set_wallpaper()
         
         # time.sleep(600)
